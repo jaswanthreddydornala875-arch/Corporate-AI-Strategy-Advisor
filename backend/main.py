@@ -1,0 +1,125 @@
+# backend/main.py
+from dotenv import load_dotenv
+import os
+load_dotenv()
+from fastapi import FastAPI, HTTPException
+from fastapi.responses import StreamingResponse
+from pydantic import BaseModel
+from fastapi.middleware.cors import CORSMiddleware
+from llm.session_state import (
+    create_session, update_fields, get_confirmed_ml_values,
+    get_progress_summary
+)
+from llm.extractor import extract_fields, generate_followup_question
+from llm.consultant import run_consulting_pipeline
+from llm.report import generate_report
+from ml.predict import run_prediction
+from ml.explainer import explain_all
+from ml.preprocess import compute_engineered_features
+
+app = FastAPI()
+
+# Allow the frontend dev server to talk to the backend during development
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://localhost:5173", "http://127.0.0.1:5173","http://localhost:5174","http://127.0.0.1:5174","http://localhost:5175","http://127.0.0.1:5175"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+# In-memory sessions — replace with Redis for production
+sessions = {}
+
+
+class ChatRequest(BaseModel):
+    session_id: str
+    message: str
+
+
+class FollowupRequest(BaseModel):
+    session_id: str
+    question: str
+
+
+@app.post("/session/new")
+def new_session():
+    import uuid
+    session_id = str(uuid.uuid4())
+    sessions[session_id] = create_session()
+    return {"session_id": session_id}
+
+
+@app.post("/chat")
+async def chat(req: ChatRequest):
+    session = sessions.get(req.session_id)
+    if not session:
+        raise HTTPException(status_code=404, detail="Session not found")
+
+    # Add user message to history
+    session["conversation_history"].append({
+        "role": "user", "content": req.message
+    })
+
+    # Step 1 — Extract fields from message
+    extracted = extract_fields(req.message, session)
+
+    # Step 2 — Update session state
+    session = update_fields(session, extracted)
+    sessions[req.session_id] = session
+
+    # Step 3 — Check if ready to predict
+    if session["ready_for_ml"] and session["ml_results"] is None:
+        confirmed = get_confirmed_ml_values(session)
+        engineered = compute_engineered_features(confirmed.copy())
+
+        # Run ML pipeline
+        session["ml_results"]       = run_prediction(confirmed)
+        session["shap_explanation"] = explain_all(confirmed, engineered)
+
+    # Step 4 — Check if ready for full report
+    if session["ready_for_report"] and not session["report_generated"]:
+        session["consulting_results"] = run_consulting_pipeline(session)
+        report = generate_report(session)
+        session["report_generated"] = True
+        sessions[req.session_id] = session
+        return {
+            "type":     "report",
+            "report":   report,
+            "progress": get_progress_summary(session)
+        }
+
+    # Step 5 — Not ready yet, ask next question
+    followup = generate_followup_question(session)
+    session["conversation_history"].append({
+        "role": "assistant", "content": followup
+    })
+    sessions[req.session_id] = session
+
+    return {
+        "type":     "question",
+        "message":  followup,
+        "progress": get_progress_summary(session)
+    }
+
+
+@app.post("/followup")
+async def followup(req: FollowupRequest):
+    """Post-report chatbot — streams answer grounded in report context"""
+    session = sessions.get(req.session_id)
+    if not session or not session["report_generated"]:
+        raise HTTPException(status_code=400, detail="Report not yet generated")
+
+    from llm.report import stream_followup
+    return StreamingResponse(
+        stream_followup(req.question, session),
+        media_type="text/event-stream"
+    )
+
+
+@app.get("/progress/{session_id}")
+def progress(session_id: str):
+    session = sessions.get(session_id)
+    if not session:
+        raise HTTPException(status_code=404, detail="Session not found")
+    return get_progress_summary(session)

@@ -1,0 +1,156 @@
+{
+  "narrative": "## 1. EXECUTIVE SUMMARY\nThe company is currently at an AI adoption level of 0.45, with an AI investment of $5,000,000, and is predicted to experience a productivity gain of 0.3791 and cost savings of $1,532,064.61, despite a negative ROI of -40.82%. However, the high risk level associated with AI adoption, driven by factors such as AI efficiency score and industry, necessitates careful consideration. To mitigate these risks, it is recommended that the company conducts an AI readiness audit, focuses on improving data quality and governance, and prioritizes employee AI training hours to drive productivity gains.\n\n## 2. KEY FINDINGS\n* The company's AI adoption level of 0.45 and automation rate of 38.0% indicate a moderate level of AI integration, with a potential for further automation to drive efficiency gains.\n* The ML predictions suggest a productivity gain of 0.3791 and cost savings of $1,532,064.61, which can be achieved by focusing on key drivers such as employee AI training hours and investment per deployment.\n* The readiness scores indicate that the company has a high overall readiness score of 61/100, with data readiness being a strong point at 75/100, but tech readiness being a weakness at 43/100.\n* The business need assessment justifies AI adoption, with document intelligence being the highest impact case, and the company's manual loan approval and slow document processing pain points being addressable through AI-powered solutions.\n\n## 3. RISK ANALYSIS\nThe high risk level associated with AI adoption is driven by factors such as AI efficiency score, industry, and investment per deployment. The SHAP explanations reveal that the AI efficiency score has a negative impact on cost savings and revenue, while the industry has a negative impact on revenue. Additionally, the negative ROI of -40.82% suggests that the company's current AI investment may not be generating the expected returns. To mitigate these risks, it is essential to carefully evaluate the company's AI strategy and focus on improving AI efficiency, data quality, and governance.\n\n## 4. STRATEGIC RECOMMENDATION\nThe top three specific actions to drive AI adoption and mitigate risks are:\n1. Conduct an AI readiness audit across all departments to identify areas for improvement, with an expected impact of increasing overall readiness score by 10-15%.\n2. Focus on improving data quality and governance, with an expected impact of increasing data readiness score by 10-15% and driving cost savings of $200,000-$300,000.\n3. Prioritize employee AI training hours, with an expected impact of driving productivity gains of 5-10% and increasing revenue by $100,000-$200,000.\n\n## 5. EXECUTIVE VERDICT\nGiven the company's moderate AI adoption level, justified business need, and high risk level, it is recommended that the company proceeds with AI adoption, but with caution. The company should focus on addressing the key drivers of risk, such as AI efficiency score and industry, and prioritize employee AI training hours, data quality, and governance. By doing so, the company can mitigate the risks associated with AI adoption and drive significant productivity gains, cost savings, and revenue growth. With a careful and strategic approach, the company can unlock the full potential of AI and achieve a positive ROI, despite the current negative ROI of -40.82%.",
+  "ml_results": {
+    "productivity_gain": 0.3791,
+    "cost_savings": 1532064.61,
+    "revenue_impact": 1426776.77,
+    "roi": -0.4082,
+    "risk_level": "High",
+    "roi_percentage": -40.82
+  },
+  "readiness": {
+    "data_readiness": {
+      "sub_scores": {
+        "data_availability": 100,
+        "data_quality": 60,
+        "data_governance": 60,
+        "data_storage": 80
+      },
+      "overall": 75
+    },
+    "org_readiness": {
+      "sub_scores": {
+        "leadership_support": 100,
+        "digital_maturity": 30,
+        "change_readiness": 60,
+        "scale_factor": 70
+      },
+      "overall": 65
+    },
+    "tech_readiness": {
+      "sub_scores": {
+        "ai_maturity": 50,
+        "automation": 38,
+        "adoption": 45,
+        "deployments": 40
+      },
+      "overall": 43
+    },
+    "overall_readiness": 61
+  },
+  "business_need": {
+    "ai_justified": true,
+    "justification": "The company's manual loan approval and slow document processing pain points can be significantly improved with AI-powered document intelligence and fraud detection, leading to increased efficiency and reduced errors. These tasks are repetitive, data-intensive, and require a level of accuracy that AI can provide. AI adoption can help the company streamline its workflows and improve customer experience.",
+    "highest_impact_use_case": "document intelligence",
+    "recommended_starting_point": "document intelligence"
+  },
+  "vendor_alignment": {
+    "vendor_provided": true,
+    "alignment_score": 50,
+    "verdict": "Proceed with Caution",
+    "reasoning": "Could not fully assess vendor alignment.",
+    "risks": []
+  },
+  "roadmap": {
+    "quick_win": "Conduct an AI readiness audit across all departments",
+    "phase_1": {
+      "title": "Foundation",
+      "duration": "0-3 months",
+      "focus": "Data and infrastructure preparation",
+      "actions": [
+        "Assess data quality",
+        "Train staff",
+        "Define KPIs"
+      ],
+      "success_metric": "Data readiness score above 80"
+    },
+    "phase_2": {
+      "title": "Pilot",
+      "duration": "3-9 months",
+      "focus": "Deploy first high-impact use case",
+      "actions": [
+        "Launch document intelligence",
+        "Monitor results",
+        "Iterate"
+      ],
+      "success_metric": "30% reduction in processing time"
+    },
+    "phase_3": {
+      "title": "Scale",
+      "duration": "9-18 months",
+      "focus": "Expand successful pilots",
+      "actions": [
+        "Roll out fraud detection",
+        "Automate workflows",
+        "Measure ROI"
+      ],
+      "success_metric": "Positive ROI achieved"
+    },
+    "critical_dependencies": [
+      "Data quality improvement",
+      "Staff training"
+    ]
+  },
+  "shap": {
+    "productivity_drivers": [
+      {
+        "feature": "employee_ai_training_hours",
+        "label": "Employee AI Training Hours",
+        "shap_value": 0.03185015272067971,
+        "direction": "positive"
+      },
+      {
+        "feature": "ai_adoption_level",
+        "label": "AI Adoption Level",
+        "shap_value": -0.024868803885292966,
+        "direction": "negative"
+      },
+      {
+        "feature": "automation_rate",
+        "label": "Automation Rate",
+        "shap_value": -0.018912804928146756,
+        "direction": "negative"
+      }
+    ],
+    "savings_drivers": [
+      {
+        "feature": "ai_efficiency_score",
+        "label": "AI Efficiency Score",
+        "shap_value": -304942.12788257934,
+        "direction": "negative"
+      },
+      {
+        "feature": "investment_per_deployment",
+        "label": "Investment per Deployment",
+        "shap_value": 163138.6786993719,
+        "direction": "positive"
+      },
+      {
+        "feature": "industry",
+        "label": "Industry",
+        "shap_value": -147234.09970666762,
+        "direction": "negative"
+      }
+    ],
+    "revenue_drivers": [
+      {
+        "feature": "investment_per_deployment",
+        "label": "Investment per Deployment",
+        "shap_value": 835651.0244879269,
+        "direction": "positive"
+      },
+      {
+        "feature": "industry",
+        "label": "Industry",
+        "shap_value": -451926.40391783905,
+        "direction": "negative"
+      },
+      {
+        "feature": "ai_efficiency_score",
+        "label": "AI Efficiency Score",
+        "shap_value": -413972.1124157869,
+        "direction": "negative"
+      }
+    ]
+  }
+}

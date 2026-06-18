@@ -1,0 +1,83 @@
+{
+  "test_input": {
+    "industry": "Financial Services",
+    "country": "United States",
+    "year": 2026,
+    "ai_adoption_level": 0.45,
+    "ai_investment_usd": 5000000,
+    "automation_rate": 0.38,
+    "employee_ai_training_hours": 120,
+    "ai_maturity_score": 0.5,
+    "deployment_count": 8
+  },
+  "ml_results": {
+    "productivity_gain": 0.3761,
+    "cost_savings": 1773277.02,
+    "revenue_impact": 1615832.11,
+    "roi": -0.3222,
+    "risk_level": "High",
+    "roi_percentage": -32.22
+  },
+  "shap_explanation": {
+    "productivity_drivers": [
+      {
+        "feature": "employee_ai_training_hours",
+        "label": "Employee AI Training Hours",
+        "shap_value": 0.03318282006476202,
+        "direction": "positive"
+      },
+      {
+        "feature": "ai_adoption_level",
+        "label": "AI Adoption Level",
+        "shap_value": -0.026410523627980246,
+        "direction": "negative"
+      },
+      {
+        "feature": "automation_rate",
+        "label": "Automation Rate",
+        "shap_value": -0.016032496510621896,
+        "direction": "negative"
+      }
+    ],
+    "savings_drivers": [
+      {
+        "feature": "ai_efficiency_score",
+        "label": "AI Efficiency Score",
+        "shap_value": -303280.93135176646,
+        "direction": "negative"
+      },
+      {
+        "feature": "investment_per_deployment",
+        "label": "Investment per Deployment",
+        "shap_value": 198304.94947712793,
+        "direction": "positive"
+      },
+      {
+        "feature": "ai_investment_usd",
+        "label": "AI Investment (USD)",
+        "shap_value": -149367.9513739518,
+        "direction": "negative"
+      }
+    ],
+    "revenue_drivers": [
+      {
+        "feature": "investment_per_deployment",
+        "label": "Investment per Deployment",
+        "shap_value": 870439.9599367058,
+        "direction": "positive"
+      },
+      {
+        "feature": "ai_investment_usd",
+        "label": "AI Investment (USD)",
+        "shap_value": -622127.8367637024,
+        "direction": "negative"
+      },
+      {
+        "feature": "ai_adoption_level",
+        "label": "AI Adoption Level",
+        "shap_value": -405701.0910284039,
+        "direction": "negative"
+      }
+    ]
+  }
+}
