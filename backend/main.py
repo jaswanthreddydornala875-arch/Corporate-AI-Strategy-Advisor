@@ -19,17 +19,29 @@ from ml.preprocess import compute_engineered_features
 
 app = FastAPI()
 
-# Allow the frontend dev server to talk to the backend during development
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:5173", "http://127.0.0.1:5173","http://localhost:5174","http://127.0.0.1:5174","http://localhost:5175","http://127.0.0.1:5175"],
+    allow_origins=[
+        "http://localhost:5173",
+        "http://127.0.0.1:5173",
+        "http://localhost:5174",
+        "http://127.0.0.1:5174",
+        "http://localhost:5175",
+        "http://127.0.0.1:5175",
+        "https://*.vercel.app",        # ← all Vercel preview URLs
+    ],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
-# In-memory sessions — replace with Redis for production
 sessions = {}
+
+
+# ── Health check — Render needs this ──────────────
+@app.get("/")
+def root():
+    return {"status": "Corporate AI Strategy Advisor API is running"}
 
 
 class ChatRequest(BaseModel):
@@ -56,28 +68,20 @@ async def chat(req: ChatRequest):
     if not session:
         raise HTTPException(status_code=404, detail="Session not found")
 
-    # Add user message to history
     session["conversation_history"].append({
         "role": "user", "content": req.message
     })
 
-    # Step 1 — Extract fields from message
     extracted = extract_fields(req.message, session)
-
-    # Step 2 — Update session state
     session = update_fields(session, extracted)
     sessions[req.session_id] = session
 
-    # Step 3 — Check if ready to predict
     if session["ready_for_ml"] and session["ml_results"] is None:
         confirmed = get_confirmed_ml_values(session)
         engineered = compute_engineered_features(confirmed.copy())
-
-        # Run ML pipeline
         session["ml_results"]       = run_prediction(confirmed)
         session["shap_explanation"] = explain_all(confirmed, engineered)
 
-    # Step 4 — Check if ready for full report
     if session["ready_for_report"] and not session["report_generated"]:
         session["consulting_results"] = run_consulting_pipeline(session)
         report = generate_report(session)
@@ -89,7 +93,6 @@ async def chat(req: ChatRequest):
             "progress": get_progress_summary(session)
         }
 
-    # Step 5 — Not ready yet, ask next question
     followup = generate_followup_question(session)
     session["conversation_history"].append({
         "role": "assistant", "content": followup
@@ -105,7 +108,6 @@ async def chat(req: ChatRequest):
 
 @app.post("/followup")
 async def followup(req: FollowupRequest):
-    """Post-report chatbot — streams answer grounded in report context"""
     session = sessions.get(req.session_id)
     if not session or not session["report_generated"]:
         raise HTTPException(status_code=400, detail="Report not yet generated")
@@ -123,3 +125,13 @@ def progress(session_id: str):
     if not session:
         raise HTTPException(status_code=404, detail="Session not found")
     return get_progress_summary(session)
+
+
+# ── Render deployment ──────────────────────────────
+if __name__ == "__main__":
+    import uvicorn
+    uvicorn.run(
+        app,
+        host="0.0.0.0",
+        port=int(os.environ.get("PORT", 8001))
+    )
