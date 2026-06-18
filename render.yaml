@@ -1,0 +1,38 @@
+services:
+  # ── Backend: FastAPI + Groq + ML pipeline ──────────────────────────────
+  - type: web
+    name: corporate-ai-strategy-advisor-backend
+    runtime: python
+    rootDir: backend
+    plan: free
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn main:app --host 0.0.0.0 --port $PORT
+    healthCheckPath: /
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.11.9
+      - key: GROQ_API_KEY
+        sync: false # you'll be prompted for this value when the Blueprint is created
+      - key: FRONTEND_URL
+        fromService:
+          type: web
+          name: corporate-ai-strategy-advisor-frontend
+          envVarKey: RENDER_EXTERNAL_URL
+
+  # ── Frontend: Vite + React static site ─────────────────────────────────
+  - type: web
+    name: corporate-ai-strategy-advisor-frontend
+    runtime: static
+    rootDir: frontend/ai-workforce
+    buildCommand: npm install && npm run build
+    staticPublishPath: dist
+    envVars:
+      - key: VITE_API_URL
+        fromService:
+          type: web
+          name: corporate-ai-strategy-advisor-backend
+          envVarKey: RENDER_EXTERNAL_URL
+    routes:
+      - type: rewrite
+        source: /*
+        destination: /index.html

@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import bgImage1 from "../assets/download.jpg";
 import "./ChatBot.css";
 
-const BASE_URL = "http://127.0.0.1:8001";
+const BASE_URL = import.meta.env.VITE_API_URL || "http://127.0.0.1:8001";
 
 // ── Helpers ─────────────────────────────────────────────────────────────────
 const fmt$ = (n) => "$" + Number(n).toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 });

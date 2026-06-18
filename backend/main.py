@@ -19,18 +19,28 @@ from ml.preprocess import compute_engineered_features
 
 app = FastAPI()
 
+allowed_origins = [
+    "http://localhost:5173",
+    "http://127.0.0.1:5173",
+    "http://localhost:5174",
+    "http://127.0.0.1:5174",
+    "http://localhost:5175",
+    "http://127.0.0.1:5175",
+    "https://corporate-ai-strategy-advisor-seven.vercel.app",
+]
+
+# Render injects this automatically (see render.yaml) once the frontend
+# static site exists, so the deployed frontend is always allowed.
+frontend_url = os.environ.get("FRONTEND_URL")
+if frontend_url:
+    allowed_origins.append(frontend_url)
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[
-        "http://localhost:5173",
-        "http://127.0.0.1:5173",
-        "http://localhost:5174",
-        "http://127.0.0.1:5174",
-        "http://localhost:5175",
-        "http://127.0.0.1:5175",
-        "https://*.vercel.app",
-        "https://corporate-ai-strategy-advisor-seven.vercel.app",        # ← all Vercel preview URLs
-    ],
+    allow_origins=allowed_origins,
+    # Covers Vercel preview deployments and any Render *.onrender.com URL,
+    # since allow_origins only does exact string matches.
+    allow_origin_regex=r"https://.*\.(vercel\.app|onrender\.com)",
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
